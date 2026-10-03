@@ -80,6 +80,12 @@ function currentUser(){
 
 /* ---------- top menu ---------- */
 const CROWN='<svg viewBox="0 0 40 30" fill="currentColor" aria-hidden="true"><path d="M3 24 1 7l10 8L20 2l9 13 10-8-2 17z"/><rect x="3" y="26" width="34" height="3" rx="1"/></svg>';
+function topState(){
+  const h=document.querySelector('.topbar'),p=$('prof');if(!h)return;
+  const over=!!(p&&p.firstChild);
+  h.classList.toggle('clear',over&&scrollY<p.offsetHeight-90);
+}
+addEventListener('scroll',()=>topState(),{passive:true});addEventListener('resize',()=>topState());
 function mountNav(active,user,u){
   const q=user?'?user='+encodeURIComponent(user):'';
   $('nav').innerHTML=`<header class="topbar">
@@ -94,6 +100,7 @@ function mountNav(active,user,u){
   if(!pr){pr=document.createElement('div');pr.id='prof';$('nav').insertAdjacentElement('afterend',pr)}
   pr.className='prof'+(u&&u.bannerImage?' hasimg':'');
   pr.innerHTML=u?`${u.bannerImage?`<img class="pbanner" src="${esc(u.bannerImage)}" alt="">`:''}<div class="pin"><img class="pav" src="${esc(u.avatar.large)}" alt=""><a class="pname" href="${esc(u.siteUrl||'#')}" target="_blank" rel="noopener">${esc(u.name)}</a></div>`:'';
+  topState();
 }
 
 /* ---------- live refresh ---------- */
@@ -272,6 +279,6 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261003b';document.body.appendChild(b)});
+document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261003c';document.body.appendChild(b)});
 window.Site={lookupNames,akaOf,aliasesOf,userAliases,setUserAliases,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
 })();
