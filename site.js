@@ -272,5 +272,6 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
+document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261003b';document.body.appendChild(b)});
 window.Site={lookupNames,akaOf,aliasesOf,userAliases,setUserAliases,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
 })();

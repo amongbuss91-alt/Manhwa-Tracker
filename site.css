@@ -287,3 +287,4 @@ body.home{background:var(--ink);overflow-x:hidden}
 .pname{margin-bottom:30px;font:700 1.3rem Karla,sans-serif;color:#fff;text-decoration:none;background:#0a091c99;padding:3px 10px;border-radius:6px;text-shadow:0 1px 6px #000}
 .pname:hover{background:#7c6cf0aa}
 @media (max-width:600px){.pav{width:72px;height:72px}.pname{margin-bottom:22px;font-size:1.05rem}}
+.build{position:fixed;right:10px;bottom:6px;font-size:.7rem;color:var(--mute);opacity:.6;pointer-events:none;z-index:5}
