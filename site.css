@@ -52,7 +52,7 @@ input,select{background:var(--panel);border:1px solid var(--line);border-radius:
 
 /* library layout */
 .layout{display:grid;grid-template-columns:272px minmax(0,1fr);gap:32px;align-items:start}
-.side{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;padding:4px 6px 4px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;overscroll-behavior:contain}
+.side{position:sticky;top:76px;align-self:start;padding:4px 0}
 .side summary{display:none}
 .fgroup{margin-bottom:26px}
 .fgroup h2{margin:0 0 8px;font:700 1rem Cinzel,serif;color:var(--lav);letter-spacing:.03em}
@@ -69,7 +69,7 @@ input,select{background:var(--panel);border:1px solid var(--line);border-radius:
 .opt span.t{flex:1;min-width:0}
 .opt small{color:var(--mute)}
 .opt.zero{opacity:.45}
-.genrelist{max-height:340px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;overscroll-behavior:contain}
+.genrelist{}
 
 .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:end;margin-bottom:16px}
 .field label{display:block;margin:0 0 4px;font-size:.8rem;color:var(--mute)}
@@ -216,7 +216,7 @@ body.home{background:var(--ink);overflow-x:hidden}
 
 @media(max-width:900px){
   .layout{grid-template-columns:1fr;gap:16px}
-  .side{position:static;max-height:none;overflow:visible;padding:0}
+  .side{position:static;padding:0}
   .side summary{display:flex;align-items:center;justify-content:space-between;list-style:none;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:600;cursor:pointer}
   .side summary::-webkit-details-marker{display:none}
   .side[open] summary{margin-bottom:16px}
@@ -272,3 +272,7 @@ body.home{background:var(--ink);overflow-x:hidden}
 .mostread a{color:var(--bone);text-decoration:none;overflow:hidden;text-overflow:ellipsis}
 .mostread a:hover{color:var(--lav)}
 .mostread em{font-style:normal;color:var(--mute);white-space:nowrap}
+
+.tile .tl{margin:0 0 6px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lav)}
+.block .tiles{margin-bottom:0}
+.block h2+.tiles{margin-top:16px}

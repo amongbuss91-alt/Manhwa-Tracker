@@ -276,5 +276,11 @@ $('nickdone').onclick=()=>{const d=$('nickdlg');d.close?d.close():d.removeAttrib
 
 Site.boot('library',onData);
 </script>
+<script>
+/* keep the sidebar in view while the page scrolls; a sidebar taller than the window moves with the page until its bottom shows, then stays */
+(()=>{const side=document.querySelector('.side');if(!side)return;
+const fit=()=>{if(getComputedStyle(side).position!=='sticky')return;side.style.top=Math.min(76,innerHeight-side.offsetHeight-16)+'px'};
+addEventListener('resize',fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(side);fit()})();
+</script>
 </body>
 </html>

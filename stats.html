@@ -17,7 +17,10 @@
   </div>
 
   <div id="content" class="hidden">
-    <div class="tiles" id="tiles"></div>
+    <section class="block" aria-labelledby="h-act">
+      <h2 id="h-act">Reading activity</h2>
+      <div class="tiles" id="tiles"></div>
+    </section>
 
     <section class="block" aria-labelledby="h-30">
       <h2 id="h-30">Last 30 days</h2>
@@ -29,6 +32,7 @@
     <section class="block" aria-labelledby="h-12">
       <h2 id="h-12">Last 12 months</h2>
       <p class="desc">One block per day. Brighter blocks mean more chapters that day.</p>
+      <p class="big"><b id="big12">0</b><span>chapters in the last 12 months</span></p>
       <div class="heat" id="heat"></div>
       <div class="hleg" id="hleg"></div>
     </section>
@@ -105,7 +109,8 @@ function saveCache(c){store.set(ckey(),c)}
 
 async function sync(){
   if(busy){again=true;return}
-  if(Date.now()-lastSync<10000)return;
+  const wait=10000-(Date.now()-lastSync);
+  if(wait>0){clearTimeout(sync.t);sync.t=setTimeout(sync,wait+50);return}
   busy=true;failed=false;
   try{
     const now=Math.floor(Date.now()/1000),floor=now-370*DAY;
@@ -165,15 +170,19 @@ function render(){
   $('content').classList.remove('hidden');
   $('main').dataset.state='';
   $('lede').textContent=busy?`Loading your reading activity…`:`Chapters you have logged on AniList, for ${name}.`;
+  const tToday=days.get(keyOf(today))||0;
+  let t7=0;for(let n=0;n<7;n++)t7+=days.get(keyOf(at(n)))||0;
+  const dom=today.getDate();let tMonth=0;for(let n=0;n<dom;n++)tMonth+=days.get(keyOf(at(n)))||0;
+  // current streak: days in a row with reading; a quiet today does not break it yet
+  let cur=0,n0=tToday>0?0:1;while(n0<365&&(days.get(keyOf(at(n0)))||0)>0){cur++;n0++}
   $('tiles').innerHTML=[
-    [t30.toLocaleString(),'chapters, last 30 days'],
-    [t12.toLocaleString(),'chapters, last 12 months'],
-    [active.toLocaleString(),'days with reading'],
-    [streak+(streak===1?' day':' days'),'longest streak'],
-    [best&&best.v?best.v.toLocaleString():'0',best&&best.v?'most in a day, '+fmt(best.d):'most in a day'],
-    [titles.toLocaleString(),'titles read']
-  ].map(([a,b])=>`<div class="tile"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join('');
+    ['Today',tToday.toLocaleString(),'chapters'],
+    ['This week',t7.toLocaleString(),'chapters \u00b7 7d'],
+    ['This month',tMonth.toLocaleString(),'chapters \u00b7 '+dom+'d'],
+    ['Current streak',cur.toLocaleString(),cur===1?'day':'days']
+  ].map(([l,v,u])=>`<div class="tile"><span class="tl">${esc(l)}</span><b>${esc(v)}</b><span>${esc(u)}</span></div>`).join('');
   $('big30').textContent=t30.toLocaleString();
+  $('big12').textContent=t12.toLocaleString();
   drawLine(last30);
   drawHeat(cells,today);
   // most read
