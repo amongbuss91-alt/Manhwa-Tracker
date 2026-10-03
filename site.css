@@ -276,3 +276,14 @@ body.home{background:var(--ink);overflow-x:hidden}
 .tile .tl{margin:0 0 6px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lav)}
 .block .tiles{margin-bottom:0}
 .block h2+.tiles{margin-top:16px}
+
+/* profile banner */
+.prof{position:relative;height:clamp(120px,17vw,220px);background:linear-gradient(135deg,#2a1f6b,#14122c 55%,#3a1d5a);margin-bottom:24px}
+.prof:empty{display:none}
+.pbanner{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.prof::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,#0a091c00 35%,#0a091cd9 100%);pointer-events:none}
+.pin{position:absolute;z-index:1;left:50%;transform:translateX(-50%);bottom:-26px;width:min(1320px,100%);padding:0 24px;display:flex;align-items:flex-end;gap:16px}
+.pav{width:96px;height:96px;border-radius:50%;border:3px solid var(--violet);background:var(--panel);object-fit:cover;box-shadow:0 6px 24px #000a}
+.pname{margin-bottom:30px;font:700 1.3rem Karla,sans-serif;color:#fff;text-decoration:none;background:#0a091c99;padding:3px 10px;border-radius:6px;text-shadow:0 1px 6px #000}
+.pname:hover{background:#7c6cf0aa}
+@media (max-width:600px){.pav{width:72px;height:72px}.pname{margin-bottom:22px;font-size:1.05rem}}

@@ -37,6 +37,12 @@
       <div class="hleg" id="hleg"></div>
     </section>
 
+    <section class="block" aria-labelledby="h-new">
+      <h2 id="h-new">Recently added</h2>
+      <p class="desc">The newest titles on your AniList manga list, with the date each one was added.</p>
+      <ol class="mostread" id="newlist"></ol>
+    </section>
+
     <section class="block" aria-labelledby="h-top">
       <h2 id="h-top">Most read in the last 30 days</h2>
       <p class="desc">Titles with the most chapters logged.</p>
@@ -52,7 +58,7 @@
 <script>
 const {$,esc,store}=Site;
 const API='https://graphql.anilist.co';
-let lastSync=0,name='',items=[],busy=false,again=false,failed=false,loading=false;
+let entries=[],lastSync=0,name='',items=[],busy=false,again=false,failed=false,loading=false;
 const DAY=86400;
 const pad=n=>String(n).padStart(2,'0');
 const keyOf=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -235,8 +241,12 @@ wireTip($('heat'),'.hc',el=>[el.dataset.t,plural(+el.dataset.v,'chapter')]);
 
 /* ---------- boot ---------- */
 let started=false;
+function renderNew(){
+  const list=entries.filter(e=>e.createdAt).sort((a,b)=>b.createdAt-a.createdAt).slice(0,10);
+  $('newlist').innerHTML=list.length?list.map(e=>{const t=Site.titleOf(e);return `<li><a href="${esc(e.media.siteUrl)}" target="_blank" rel="noopener">${esc(t)}</a><em>${esc(Site.agoText(e.createdAt))}</em></li>`}).join(''):'<li class="shint">AniList has no added dates for your list yet.</li>';
+}
 function onData(d){
-  name=d.u.name;
+  name=d.u.name;entries=d.entries;renderNew();
   if(!started){
     started=true;
     const c=loadCache();

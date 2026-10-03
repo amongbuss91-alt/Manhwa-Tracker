@@ -38,9 +38,9 @@ function agoText(sec){
 
 /* ---------- AniList ---------- */
 const QUERY=`query($name:String,$chunk:Int){
- User(name:$name){name avatar{large} siteUrl}
+ User(name:$name){name avatar{large} bannerImage siteUrl}
  MediaListCollection(userName:$name,type:MANGA,chunk:$chunk){hasNextChunk lists{entries{
-  status progress updatedAt startedAt{year} completedAt{year}
+  status progress updatedAt createdAt startedAt{year} completedAt{year}
   media{id siteUrl format status genres synonyms countryOfOrigin chapters averageScore title{romaji english native} coverImage{large}}
  }}}}`;
 async function fetchList(name){
@@ -61,7 +61,7 @@ async function fetchList(name){
   return {u:user,entries};
 }
 const errText=e=>e&&e.known?e.message:'Could not reach AniList. Check your connection and try again.';
-const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
+const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.createdAt,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
 
 /* ---------- storage (always guarded) ---------- */
 const store={
@@ -89,8 +89,11 @@ function mountNav(active,user,u){
       <a class="tab${active==='genres'?' on':''}" href="genres.html${q}"${active==='genres'?' aria-current="page"':''}>Genres</a>
       <a class="tab${active==='stats'?' on':''}" href="stats.html${q}"${active==='stats'?' aria-current="page"':''}>Stats</a>
     </nav>
-    <div class="who" id="who">${u?`<img src="${esc(u.avatar.large)}" alt=""><b>${esc(u.name)}</b>`:''}<a href="index.html">Change user</a></div>
   </header>`;
+  let pr=$('prof');
+  if(!pr){pr=document.createElement('div');pr.id='prof';$('nav').insertAdjacentElement('afterend',pr)}
+  pr.className='prof'+(u&&u.bannerImage?' hasimg':'');
+  pr.innerHTML=u?`${u.bannerImage?`<img class="pbanner" src="${esc(u.bannerImage)}" alt="">`:''}<div class="pin"><img class="pav" src="${esc(u.avatar.large)}" alt=""><a class="pname" href="${esc(u.siteUrl||'#')}" target="_blank" rel="noopener">${esc(u.name)}</a></div>`:'';
 }
 
 /* ---------- live refresh ---------- */
@@ -144,7 +147,7 @@ async function boot(active,onData){
   try{
     const d=await fetchList(user);
     writeCache(user,d);
-    if(!cached||sigOf(d.entries)!==sigOf(cached.entries))show(d);
+    if(!cached||sigOf(d.entries)!==sigOf(cached.entries)||JSON.stringify(d.u)!==JSON.stringify(cached.u))show(d);
     liveStart(d.u.name,sigOf(d.entries),show);
   }catch(e){
     if(!cached){

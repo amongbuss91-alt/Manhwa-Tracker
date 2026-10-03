@@ -40,6 +40,7 @@
           <select id="group">
             <option value="az">Title (A–Z)</option>
             <option value="recent">Recently read</option>
+            <option value="added">Recently added</option>
             <option value="started">Year started</option>
             <option value="rating">Rating</option>
             <option value="status">Status</option>
@@ -96,9 +97,16 @@ function recentBucket(e){
   const h=(Date.now()/1000-e.updatedAt)/3600;
   return h<24?'Last 24 hours':h<168?'Past 7 days':h<720?'Past 30 days':h<2160?'Past 3 months':'Older';
 }
+const ADDED=['Last 24 hours','Past 7 days','Past 30 days','Past 3 months','Older','Date not available'];
+function addedBucket(e){
+  if(!e.createdAt)return 'Date not available';
+  const h=(Date.now()/1000-e.createdAt)/3600;
+  return h<24?'Last 24 hours':h<168?'Past 7 days':h<720?'Past 30 days':h<2160?'Past 3 months':'Older';
+}
 const modes={
  az:{key:e=>{const c=titleOf(e)[0].toUpperCase();return /[A-Z]/.test(c)?c:'#'},keys:(a,b)=>a==='#'?1:b==='#'?-1:alpha(a,b),inner:byTitle},
  recent:{key:recentBucket,keys:(a,b)=>RECENT.indexOf(a)-RECENT.indexOf(b),inner:(a,b)=>(b.updatedAt-a.updatedAt)||byTitle(a,b)},
+ added:{key:addedBucket,keys:(a,b)=>ADDED.indexOf(a)-ADDED.indexOf(b),inner:(a,b)=>((b.createdAt||0)-(a.createdAt||0))||byTitle(a,b)},
  started:{key:e=>e.startedAt.year||'Date not set',keys:numFirst(desc),inner:byTitle},
  rating:{key:e=>avg(e)?String(Math.floor(avg(e))):'No rating yet',label:k=>/^\d/.test(k)?`${k}.0 to ${k}.9`:k,keys:numFirst(desc),inner:(a,b)=>avg(b)-avg(a)||byTitle(a,b)},
  status:{key:e=>STATUS[e.status],keys:(a,b)=>STATUS_ORDER.indexOf(a)-STATUS_ORDER.indexOf(b),inner:byTitle},
@@ -200,13 +208,14 @@ function card(e){
   const pct=m.chapters?Math.min(100,e.progress/m.chapters*100):(STATUS[e.status]==='Completed'?100:0);
   const prog=e.progress?`, Ch. ${e.progress}${m.chapters?'/'+m.chapters:''}`:'';
   const seen=$('group').value==='recent'&&!notStarted(e)&&e.updatedAt?`<div class="rel">Updated ${agoText(e.updatedAt)}</div>`:'';
+  const addedLine=$('group').value==='added'&&e.createdAt?`<div class="rel">Added ${agoText(e.createdAt)}</div>`:'';
   const PUB={HIATUS:'On hiatus',FINISHED:'Finished',CANCELLED:'Cancelled',NOT_YET_RELEASED:'Not yet released'};
   const aka=akaOf(m.id);
   return `<div class="cardwrap"><button type="button" class="nick" data-id="${m.id}" aria-label="Your names for ${esc(t)}" title="Add your own name for this title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></button><a class="card" href="${esc(m.siteUrl)}" target="_blank" rel="noopener" title="${esc(t)}">
     <img class="cover" loading="lazy" src="${esc(m.coverImage.large)}" alt="">
     <span class="tag">${esc(originOf(e))}</span>
     ${a?`<span class="seal" title="AniList average score">${a.toFixed(1)}</span>`:''}
-    <div class="meta"><b>${esc(t)}</b>${aka?`<small class="aka">${esc(aka)}</small>`:''}<small>${esc(STATUS[e.status])}${prog}</small>${seen}${PUB[m.status]?`<div class="rel">${PUB[m.status]}</div>`:''}
+    <div class="meta"><b>${esc(t)}</b>${aka?`<small class="aka">${esc(aka)}</small>`:''}<small>${esc(STATUS[e.status])}${prog}</small>${seen}${addedLine}${PUB[m.status]?`<div class="rel">${PUB[m.status]}</div>`:''}
     <div class="bar"><i style="width:${pct}%"></i></div></div></a></div>`;
 }
 function pager(pages,total){
