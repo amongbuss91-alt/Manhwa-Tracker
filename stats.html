@@ -6,7 +6,7 @@
 <title>Stats | Manhwa Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261003h">
+<link rel="stylesheet" href="site.css?v=20261003k">
 </head>
 <body class="app">
 <div id="nav"></div>
@@ -39,24 +39,22 @@
 
     <section class="block" aria-labelledby="h-tags">
       <h2 id="h-tags">Tags</h2>
-      <p class="desc">The most common AniList tags on your list, like Isekai or Survivalism, split into manhwa, manga and manhua. Spoiler tags and weak tags are left out. Select a bar to open those titles in your library.</p>
+      <p class="desc">The most common AniList tags on your list, like Isekai or Revenge, split into manhwa, manga and manhua. Spoiler tags and weak tags are left out. Select a bar to open those titles in your library.</p>
       <div class="legend" id="tlegend"></div>
       <div class="bars" id="tbars" role="list"></div>
-      <details class="tablebox"><summary>View as a table</summary><div id="ttable"></div></details>
     </section>
 
     <section class="block" aria-labelledby="h-top">
       <h2 id="h-top">Most read in the last 30 days</h2>
       <p class="desc">Titles with the most chapters logged.</p>
       <ol class="mostread" id="mostread"></ol>
-      <details class="tablebox"><summary>View daily numbers as a table</summary><div id="table"></div></details>
     </section>
     <p class="shint" id="note"></p>
   </div>
 </main>
 <div class="tip hidden" id="tip" role="tooltip"></div>
 
-<script src="site.js?v=20261003h"></script>
+<script src="site.js?v=20261003k"></script>
 <script>
 const {$,esc,store,originOf,TYPES}=Site;
 const TYPE_COLOR={Manhwa:'#3987e5',Manga:'#d95926',Manhua:'#199e70',Novel:'#c98500',Other:'#898781'};
@@ -203,7 +201,6 @@ function render(){
   items.filter(i=>i[1]>=cut).forEach(i=>{const e=tot.get(i[3])||{id:i[3],t:i[4],n:0};e.n+=i[2];tot.set(i[3],e)});
   const top=[...tot.values()].sort((a,b)=>b.n-a.n).slice(0,8);
   $('mostread').innerHTML=top.length?top.map(e=>`<li><a href="https://anilist.co/manga/${e.id}" target="_blank" rel="noopener">${esc(e.t)}</a><em>${plural(e.n,'chapter')}</em></li>`).join(''):'<li class="shint">No chapters logged in the last 30 days.</li>';
-  $('table').innerHTML='<table><thead><tr><th>Day</th><th>Chapters</th></tr></thead><tbody>'+last30.slice().reverse().map(x=>`<tr><td>${esc(fmtFull(x.d))}</td><td>${x.v}</td></tr>`).join('')+'</tbody></table>';
   if(!failed)$('note').textContent='Chapter counts come from your AniList activity feed, so they follow what AniList recorded when you updated progress. Updating many chapters at once counts them all on that day.';
 }
 
@@ -247,6 +244,7 @@ function drawHeat(cells,today){
 wireTip($('heat'),'.hc',el=>[el.dataset.t,plural(+el.dataset.v,'chapter')]);
 
 /* ---------- tags by type (stacked bars) ---------- */
+const shortTag=n=>n.replace(/^Primarily (.+) Cast$/,'$1 Cast').replace(/Protagonists/,'MCs').replace(/Protagonist/,'MC');
 function drawTags(){
   const by={},typeTotals={};
   entries.forEach(e=>{
@@ -256,15 +254,14 @@ function drawTags(){
   const rows=Object.entries(by).sort((a,b)=>b[1].total-a[1].total||a[0].localeCompare(b[0])).slice(0,20);
   const types=[...TYPES,'Other'].filter(t=>rows.some(r=>r[1][t]));
   const bars=$('tbars');
-  if(!rows.length){$('tlegend').innerHTML='';bars.innerHTML='<p class="shint">No tags on your list yet.</p>';$('ttable').innerHTML='';return}
+  if(!rows.length){$('tlegend').innerHTML='';bars.innerHTML='<p class="shint">No tags on your list yet.</p>';return}
   $('tlegend').innerHTML=types.map(t=>`<span><i style="background:${TYPE_COLOR[t]}"></i>${esc(t)} <small>${typeTotals[t]}</small></span>`).join('');
   const max=rows[0][1].total;
   bars.innerHTML=rows.map(([g,r])=>{
     const segs=types.filter(t=>r[t]).map(t=>`<a class="seg-b" href="${esc(libLink({tag:g,type:t}))}" data-g="${esc(g)}" data-t="${esc(t)}" data-n="${r[t]}" data-total="${r.total}" style="flex:${r[t]} 1 0;background:${TYPE_COLOR[t]};color:${inkOn(TYPE_COLOR[t])}" aria-label="${esc(g)}, ${esc(t)}: ${plural(r[t],'title')}"></a>`).join('');
-    return `<div class="brow" role="listitem"><a href="${esc(libLink({tag:g}))}" title="Open ${esc(g)} titles">${esc(g)}</a><div class="bcell"><div class="btrack" style="width:calc((100% - 44px) * ${Math.max(r.total/max,.03).toFixed(4)})">${segs}</div><span class="btotal">${r.total}</span></div></div>`;
+    return `<div class="brow" role="listitem"><a href="${esc(libLink({tag:g}))}" title="Open ${esc(g)} titles">${esc(shortTag(g))}</a><div class="bcell"><div class="btrack" style="width:calc((100% - 44px) * ${Math.max(r.total/max,.03).toFixed(4)})">${segs}</div><span class="btotal">${r.total}</span></div></div>`;
   }).join('');
   fitLabels();
-  $('ttable').innerHTML=`<table><thead><tr><th scope="col">Tag</th>${types.map(t=>`<th scope="col">${esc(t)}</th>`).join('')}<th scope="col">Total</th></tr></thead><tbody>${rows.map(([g,r])=>`<tr><th scope="row">${esc(g)}</th>${types.map(t=>`<td>${r[t]||0}</td>`).join('')}<td>${r.total}</td></tr>`).join('')}</tbody></table>`;
 }
 function fitLabels(){document.querySelectorAll('.seg-b').forEach(s=>{s.textContent=s.offsetWidth>=28?s.dataset.n:''})}
 addEventListener('resize',fitLabels);

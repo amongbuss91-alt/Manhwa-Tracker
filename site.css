@@ -277,7 +277,15 @@ body.home{background:var(--ink);overflow-x:hidden}
 .pname:hover{text-decoration:underline}
 @media (max-width:600px){.prof{height:190px}.pav{height:100px}.pname{margin-bottom:18px;font-size:1rem}}
 .build{position:fixed;right:10px;bottom:6px;font-size:.7rem;color:var(--mute);opacity:.6;pointer-events:none;z-index:5}
-.adult{position:absolute;top:34px;left:8px;padding:2px 8px;border-radius:4px;background:#b8324f;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.adult.sug{background:#8a5a2b}
 #tagq{width:100%;box-sizing:border-box;margin:0 0 10px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#100f26;color:var(--bone);font:inherit;font-size:.9rem}
 #tagq:focus{outline:2px solid var(--violet);outline-offset:1px}
+
+/* content labels: tinted card, label under the progress bar */
+.card.lab-sug{background:linear-gradient(#2b1f17,#20171a);border-color:#8a5a2b}
+.card.lab-adult{background:linear-gradient(#321620,#241220);border-color:#b8324f}
+.card.lab-sug:hover{border-color:#d49a52;box-shadow:0 8px 24px #d49a5233}
+.card.lab-adult:hover{border-color:#e0486a;box-shadow:0 8px 24px #e0486a33}
+.clabel{margin-top:9px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#f0c58a}
+.card.lab-adult .clabel{color:#ff8fa8}
+#tbars .brow{grid-template-columns:150px minmax(0,1fr)}
+@media (max-width:600px){#tbars .brow{grid-template-columns:112px minmax(0,1fr)}}

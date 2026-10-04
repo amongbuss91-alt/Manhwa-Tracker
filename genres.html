@@ -6,7 +6,7 @@
 <title>Genres | Manhwa Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261003h">
+<link rel="stylesheet" href="site.css?v=20261003k">
 </head>
 <body class="app">
 <div id="nav"></div>
@@ -24,7 +24,6 @@
       <p class="desc">How many titles carry each genre, split into manhwa, manga and manhua. A title with three genres counts once in each of those rows. Select a bar to open those titles in your library.</p>
       <div class="legend" id="legend"></div>
       <div class="bars" id="bars" role="list"></div>
-      <details class="tablebox"><summary>View as a table</summary><div id="table"></div></details>
     </section>
 
     <section class="block" aria-labelledby="h-pairs">
@@ -43,7 +42,7 @@
 </main>
 <div class="tip hidden" id="tip" role="tooltip"></div>
 
-<script src="site.js?v=20261003h"></script>
+<script src="site.js?v=20261003k"></script>
 <script>
 const {$,esc,STATUS,STATUS_ORDER,TYPES,originOf}=Site;
 const TYPE_COLOR={Manhwa:'#3987e5',Manga:'#d95926',Manhua:'#199e70',Novel:'#c98500',Other:'#898781'};
@@ -121,7 +120,7 @@ $('scope').addEventListener('click',e=>{const b=e.target.closest('.seg');if(b){s
 /* ---------- chart 1: genres by type (stacked bars) ---------- */
 function drawBars(rows,types,typeTotals){
   const bars=$('bars');
-  if(!rows.length){$('legend').innerHTML='';bars.innerHTML='<p class="shint">No titles with genres in this view.</p>';$('table').innerHTML='';return}
+  if(!rows.length){$('legend').innerHTML='';bars.innerHTML='<p class="shint">No titles with genres in this view.</p>';return}
   $('legend').innerHTML=types.map(t=>`<span><i style="background:${TYPE_COLOR[t]}"></i>${esc(t)} <small>${typeTotals[t]}</small></span>`).join('');
   const max=rows[0][1].total;
   bars.innerHTML=rows.map(([g,r])=>{
@@ -129,8 +128,6 @@ function drawBars(rows,types,typeTotals){
     return `<div class="brow" role="listitem"><a href="${esc(libLink({genre:g}))}" title="Open ${esc(g)} titles">${esc(g)}</a><div class="bcell"><div class="btrack" style="width:calc((100% - 44px) * ${Math.max(r.total/max,.03).toFixed(4)})">${segs}</div><span class="btotal">${r.total}</span></div></div>`;
   }).join('');
   fitLabels();
-  /* table alternative */
-  $('table').innerHTML=`<table><thead><tr><th scope="col">Genre</th>${types.map(t=>`<th scope="col">${esc(t)}</th>`).join('')}<th scope="col">Total</th></tr></thead><tbody>${rows.map(([g,r])=>`<tr><th scope="row">${esc(g)}</th>${types.map(t=>`<td>${r[t]||0}</td>`).join('')}<td>${r.total}</td></tr>`).join('')}</tbody></table>`;
 }
 /* put the count inside a segment only when it fits with room to spare */
 function fitLabels(){

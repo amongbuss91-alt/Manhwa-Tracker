@@ -6,7 +6,7 @@
 <title>Library | Manhwa Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261003h">
+<link rel="stylesheet" href="site.css?v=20261003k">
 </head>
 <body class="app">
 <div id="nav"></div>
@@ -61,7 +61,7 @@
   </div>
 </main>
 
-<script src="site.js?v=20261003h"></script>
+<script src="site.js?v=20261003k"></script>
 <script>
 const {contentLabel,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,aliasesOf,akaOf,lookupNames}=Site;
 let all=[],state={type:'All',status:'All',genres:[],tags:[],page:1};
@@ -201,14 +201,15 @@ function card(e){
   const prog=e.progress?`, Ch. ${e.progress}${m.chapters?'/'+m.chapters:''}`:'';
   const seen=$('group').value==='recent'&&!notStarted(e)&&e.updatedAt?`<div class="rel">Updated ${agoText(e.updatedAt)}</div>`:'';
   const addedLine=$('group').value==='added'&&e.createdAt?`<div class="rel">Added ${agoText(e.createdAt)}</div>`:'';
+  const lab=contentLabel(e);
   const PUB={HIATUS:'On hiatus',FINISHED:'Finished',CANCELLED:'Cancelled',NOT_YET_RELEASED:'Not yet released'};
   const aka=akaOf(m.id);
-  return `<div class="cardwrap"><a class="card" href="${esc(m.siteUrl)}" target="_blank" rel="noopener" title="${esc(t)}">
+  return `<div class="cardwrap"><a class="card${lab==='Adult'?' lab-adult':lab?' lab-sug':''}" href="${esc(m.siteUrl)}" target="_blank" rel="noopener" title="${esc(t)}">
     <img class="cover" loading="lazy" src="${esc(m.coverImage.large)}" alt="">
-    <span class="tag">${esc(originOf(e))}</span>${(()=>{const l=contentLabel(e);return l?`<span class="adult${l==='Suggestive'?' sug':''}" title="${l==='Adult'?'Marked adult on AniList':'Suggestive tags on AniList (Ecchi, nudity, etc.)'}">${l}</span>`:''})()}
+    <span class="tag">${esc(originOf(e))}</span>
     ${a?`<span class="seal" title="AniList average score">${a.toFixed(1)}</span>`:''}
     <div class="meta"><b>${esc(t)}</b>${aka?`<small class="aka">${esc(aka)}</small>`:''}<small>${esc(STATUS[e.status])}${prog}</small>${seen}${addedLine}${PUB[m.status]?`<div class="rel">${PUB[m.status]}</div>`:''}
-    <div class="bar"><i style="width:${pct}%"></i></div></div></a></div>`;
+    <div class="bar"><i style="width:${pct}%"></i></div>${lab?`<div class="clabel" title="${lab==='Adult'?'Marked adult on AniList':'Suggestive tags on AniList (Ecchi, nudity, etc.)'}">${lab}</div>`:''}</div></a></div>`;
 }
 function pager(pages,total){
   const el=$('pager'),p=state.page;
