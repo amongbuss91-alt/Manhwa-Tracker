@@ -15,17 +15,22 @@ const originOf=e=>{
   if(KANA.test(n))return 'Manga';
   return ORIGIN[m.countryOfOrigin]||'Other';
 };
+/* content label from AniList's own flags: Adult if AniList marks it adult, Suggestive for Ecchi or adult-type tags */
+function contentLabel(e){
+  const m=e.media,g=m.genres||[];
+  if(m.isAdult||g.includes('Hentai'))return 'Adult';
+  if(g.includes('Ecchi')||(m.adultTags||[]).length)return 'Suggestive';
+  return '';
+}
 const titleOf=e=>e.media.title.english||e.media.title.romaji||'Untitled';
 const avg=e=>e.media.averageScore?e.media.averageScore/10:0;
 const norm=t=>String(t||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 /* names AniList doesn't list, so the English title still finds the entry (add more as id: [names]) */
-const BUILTIN_ALIASES={217430:['I Became the Youngest Martial God']};
+const BUILTIN_ALIASES={217430:['I Became the Youngest Martial God'],215524:['Survivalism']};
 let nameCache=new WeakMap();
 let looked={};   /* AniList id -> {names:[], en:''} filled by lookupNames() */
-const userAliases=()=>store.get('aliases',{});
-const aliasesOf=id=>[...(BUILTIN_ALIASES[id]||[]),...(userAliases()[id]||[]),...((looked[id]&&looked[id].names)||[])];
-const akaOf=id=>(BUILTIN_ALIASES[id]||[])[0]||(userAliases()[id]||[])[0]||(looked[id]&&looked[id].en)||'';
-function setUserAliases(id,list){const a=userAliases();if(list.length)a[id]=list;else delete a[id];store.set('aliases',a);nameCache=new WeakMap()}
+const aliasesOf=id=>[...(BUILTIN_ALIASES[id]||[]),...((looked[id]&&looked[id].names)||[])];
+const akaOf=id=>(BUILTIN_ALIASES[id]||[])[0]||(looked[id]&&looked[id].en)||'';
 const namesOf=e=>{let n=nameCache.get(e.media);if(!n){const t=e.media.title;n=norm([t.english,t.romaji,t.native,...(e.media.synonyms||[]),...aliasesOf(e.media.id)].filter(Boolean).join(' | '));nameCache.set(e.media,n)}return n};
 const matches=(e,q)=>{const n=namesOf(e);return q.split(' ').every(w=>n.includes(w))};
 function agoText(sec){
@@ -41,7 +46,7 @@ const QUERY=`query($name:String,$chunk:Int){
  User(name:$name){name avatar{large} bannerImage siteUrl}
  MediaListCollection(userName:$name,type:MANGA,chunk:$chunk){hasNextChunk lists{entries{
   status progress updatedAt createdAt startedAt{year} completedAt{year}
-  media{id siteUrl format status genres synonyms countryOfOrigin chapters averageScore title{romaji english native} coverImage{large}}
+  media{id siteUrl isAdult tags{name rank isMediaSpoiler isAdult} format status genres synonyms countryOfOrigin chapters averageScore title{romaji english native} coverImage{large}}
  }}}}`;
 async function fetchList(name){
   const seen=new Set(),entries=[];let user=null,chunk=1,more=true;
@@ -55,13 +60,17 @@ async function fetchList(name){
     }
     user=j.data.User;
     const col=j.data.MediaListCollection;
-    col.lists.flatMap(l=>l.entries).forEach(e=>{if(STATUS[e.status]&&!seen.has(e.media.id)){seen.add(e.media.id);entries.push(e)}});
+    col.lists.flatMap(l=>l.entries).forEach(e=>{if(STATUS[e.status]&&!seen.has(e.media.id)){
+      seen.add(e.media.id);
+      const tg=(e.media.tags||[]).filter(t=>!t.isMediaSpoiler&&t.rank>=40);
+      e.media.tagNames=tg.map(t=>t.name);e.media.adultTags=tg.filter(t=>t.isAdult).map(t=>t.name);delete e.media.tags;
+      entries.push(e)}});
     more=!!col.hasNextChunk;chunk++;
   }
   return {u:user,entries};
 }
 const errText=e=>e&&e.known?e.message:'Could not reach AniList. Check your connection and try again.';
-const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.createdAt,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
+const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.createdAt,(e.media.tagNames||[]).length,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
 
 /* ---------- storage (always guarded) ---------- */
 const store={
@@ -279,6 +288,6 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261003c';document.body.appendChild(b)});
-window.Site={lookupNames,akaOf,aliasesOf,userAliases,setUserAliases,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
+document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261003h';document.body.appendChild(b)});
+window.Site={contentLabel,lookupNames,akaOf,aliasesOf,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
 })();

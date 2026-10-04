@@ -86,22 +86,9 @@ input,select{background:var(--panel);border:1px solid var(--line);border-radius:
 .pill button{background:none;border:0;padding:0 6px;color:var(--lav);font-size:1rem;line-height:1}
 .shint{margin:0 0 6px;font-size:.85rem;color:var(--mute);min-height:1.2em}
 
-/* nicknames */
+/* cards */
 .cardwrap{position:relative}
 .cardwrap>.card{height:100%}
-.nick{position:absolute;z-index:2;top:52px;right:10px;width:30px;height:30px;padding:0;display:grid;place-items:center;border-radius:50%;background:#0a091ccc;border:1px solid var(--line);color:var(--lav);opacity:0;transition:opacity .15s}
-.nick svg{width:15px;height:15px}
-.cardwrap:hover .nick,.cardwrap:focus-within .nick,.nick:focus-visible{opacity:1}
-@media(hover:none){.nick{opacity:.85}}
-.aka{font-style:italic;color:var(--lav)!important}
-dialog{background:var(--panel);color:var(--bone);border:1px solid var(--line);border-radius:14px;padding:22px 24px;width:min(460px,calc(100vw - 32px))}
-dialog::backdrop{background:#05040fb3}
-dialog h2{margin:0 0 4px;font:700 1.2rem Cinzel,serif}
-.nicklist{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.nickform{display:flex;gap:8px}
-.nickform input{flex:1;min-width:0}
-.nickfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
-.nickfoot .shint{margin:0}
 /* groups + cards */
 .group{margin-top:30px}
 .group:first-child{margin-top:8px}
@@ -290,3 +277,7 @@ body.home{background:var(--ink);overflow-x:hidden}
 .pname:hover{text-decoration:underline}
 @media (max-width:600px){.prof{height:190px}.pav{height:100px}.pname{margin-bottom:18px;font-size:1rem}}
 .build{position:fixed;right:10px;bottom:6px;font-size:.7rem;color:var(--mute);opacity:.6;pointer-events:none;z-index:5}
+.adult{position:absolute;top:34px;left:8px;padding:2px 8px;border-radius:4px;background:#b8324f;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.adult.sug{background:#8a5a2b}
+#tagq{width:100%;box-sizing:border-box;margin:0 0 10px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#100f26;color:var(--bone);font:inherit;font-size:.9rem}
+#tagq:focus{outline:2px solid var(--violet);outline-offset:1px}

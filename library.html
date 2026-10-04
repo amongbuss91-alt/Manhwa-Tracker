@@ -6,7 +6,7 @@
 <title>Library | Manhwa Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261003c">
+<link rel="stylesheet" href="site.css?v=20261003h">
 </head>
 <body class="app">
 <div id="nav"></div>
@@ -61,20 +61,10 @@
   </div>
 </main>
 
-<dialog id="nickdlg" aria-labelledby="nicktitle">
-  <h2 id="nicktitle">Your names for this title</h2>
-  <p class="shint" id="nicksub"></p>
-  <div id="nicklist" class="nicklist"></div>
-  <form id="nickform" class="nickform">
-    <input id="nickinput" placeholder="e.g. the English title" aria-label="Add a name" autocomplete="off">
-    <button class="btn primary" type="submit">Add</button>
-  </form>
-  <div class="nickfoot"><span class="shint">Saved in this browser. Search will match these names.</span><button class="btn" id="nickdone" type="button">Done</button></div>
-</dialog>
-<script src="site.js?v=20261003c"></script>
+<script src="site.js?v=20261003h"></script>
 <script>
-const {$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,aliasesOf,akaOf,userAliases,setUserAliases,BUILTIN_ALIASES,lookupNames}=Site;
-let all=[],state={type:'All',status:'All',genres:[],page:1};
+const {contentLabel,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,aliasesOf,akaOf,lookupNames}=Site;
+let all=[],state={type:'All',status:'All',genres:[],tags:[],page:1};
 
 /* start from the link (the Genres page sends people here with a genre or type already picked) */
 (function(){
@@ -83,6 +73,7 @@ let all=[],state={type:'All',status:'All',genres:[],page:1};
   if(t)state.type=t;
   if(s)state.status=s;
   if(g)state.genres=g.split(',').filter(Boolean);
+  if(p.get('tag'))state.tags=p.get('tag').split(',').filter(Boolean);
   if(p.get('q'))$('filter').value=p.get('q');
 })();
 
@@ -170,7 +161,7 @@ function findAltNames(){
 /* ---------- render ---------- */
 function filtered(){
   const q=norm($('filter').value);
-  return all.filter(e=>(state.type==='All'||originOf(e)===state.type)&&(state.status==='All'||STATUS[e.status]===state.status)&&state.genres.every(g=>(e.media.genres||[]).includes(g))&&(!q||matches(e,q)));
+  return all.filter(e=>(state.type==='All'||originOf(e)===state.type)&&(state.status==='All'||STATUS[e.status]===state.status)&&state.genres.every(g=>(e.media.genres||[]).includes(g))&&state.tags.every(t=>(e.media.tagNames||[]).includes(t))&&(!q||matches(e,q)));
 }
 function paintBar(n){
   const q=$('filter').value.trim();
@@ -178,6 +169,7 @@ function paintBar(n){
   if(state.type!=='All')pills.push(['type',state.type]);
   if(state.status!=='All')pills.push(['status',state.status]);
   state.genres.forEach(g=>pills.push(['genre',g]));
+  state.tags.forEach(t=>pills.push(['tag',t]));
   if(q)pills.push(['q','Search: '+q]);
   $('rbar').innerHTML=`<span>${n===all.length?`<b>${n}</b> titles`:`<b>${n}</b> of ${all.length} titles`}</span>`+pills.map(([k,v])=>`<span class="pill">${esc(v)}<button type="button" data-k="${k}" data-v="${esc(v)}" aria-label="Remove ${esc(v)}">×</button></span>`).join('');
   const active=pills.length;
@@ -211,9 +203,9 @@ function card(e){
   const addedLine=$('group').value==='added'&&e.createdAt?`<div class="rel">Added ${agoText(e.createdAt)}</div>`:'';
   const PUB={HIATUS:'On hiatus',FINISHED:'Finished',CANCELLED:'Cancelled',NOT_YET_RELEASED:'Not yet released'};
   const aka=akaOf(m.id);
-  return `<div class="cardwrap"><button type="button" class="nick" data-id="${m.id}" aria-label="Your names for ${esc(t)}" title="Add your own name for this title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></button><a class="card" href="${esc(m.siteUrl)}" target="_blank" rel="noopener" title="${esc(t)}">
+  return `<div class="cardwrap"><a class="card" href="${esc(m.siteUrl)}" target="_blank" rel="noopener" title="${esc(t)}">
     <img class="cover" loading="lazy" src="${esc(m.coverImage.large)}" alt="">
-    <span class="tag">${esc(originOf(e))}</span>
+    <span class="tag">${esc(originOf(e))}</span>${(()=>{const l=contentLabel(e);return l?`<span class="adult${l==='Suggestive'?' sug':''}" title="${l==='Adult'?'Marked adult on AniList':'Suggestive tags on AniList (Ecchi, nudity, etc.)'}">${l}</span>`:''})()}
     ${a?`<span class="seal" title="AniList average score">${a.toFixed(1)}</span>`:''}
     <div class="meta"><b>${esc(t)}</b>${aka?`<small class="aka">${esc(aka)}</small>`:''}<small>${esc(STATUS[e.status])}${prog}</small>${seen}${addedLine}${PUB[m.status]?`<div class="rel">${PUB[m.status]}</div>`:''}
     <div class="bar"><i style="width:${pct}%"></i></div></div></a></div>`;
@@ -234,13 +226,14 @@ $('sclear').onclick=()=>{$('filter').value='';redraw();$('filter').focus()};
 $('f-type').addEventListener('change',e=>{state.type=e.target.value;redraw()});
 $('f-status').addEventListener('change',e=>{state.status=e.target.value;redraw()});
 $('f-genre').addEventListener('change',e=>{const v=e.target.value;state.genres=e.target.checked?[...state.genres,v]:state.genres.filter(x=>x!==v);redraw()});
-$('fclear').onclick=()=>{state.type='All';state.status='All';state.genres=[];$('filter').value='';syncSide();redraw()};
+$('fclear').onclick=()=>{state.type='All';state.status='All';state.genres=[];state.tags=[];$('filter').value='';syncSide();redraw()};
 $('rbar').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   const k=b.dataset.k,v=b.dataset.v;
   if(k==='type')state.type='All';
   else if(k==='status')state.status='All';
   else if(k==='genre')state.genres=state.genres.filter(g=>g!==v);
+  else if(k==='tag')state.tags=state.tags.filter(g=>g!==v);
   else if(k==='q')$('filter').value='';
   syncSide();redraw();
 });
@@ -254,34 +247,6 @@ const syncDrawer=()=>{$('side').open=mq.matches};
 mq.addEventListener?mq.addEventListener('change',syncDrawer):mq.addListener(syncDrawer);
 syncDrawer();
 
-/* ---------- your own names for titles ---------- */
-let nickId=null;
-function paintNick(){
-  const e=all.find(x=>x.media.id===nickId);if(!e)return;
-  $('nicksub').textContent=titleOf(e);
-  const mine=userAliases()[nickId]||[],built=BUILTIN_ALIASES[nickId]||[];
-  $('nicklist').innerHTML=built.map(n=>`<span class="pill">${esc(n)}</span>`).join('')+mine.map((n,i)=>`<span class="pill">${esc(n)}<button type="button" data-i="${i}" aria-label="Remove ${esc(n)}">×</button></span>`).join('')||'<span class="shint">No extra names yet.</span>';
-}
-document.addEventListener('click',e=>{
-  const b=e.target.closest('.nick');
-  if(!b)return;
-  nickId=+b.dataset.id;paintNick();
-  const d=$('nickdlg');if(d.showModal)d.showModal();else d.setAttribute('open','');
-  $('nickinput').value='';$('nickinput').focus();
-});
-$('nickform').addEventListener('submit',ev=>{
-  ev.preventDefault();
-  const v=$('nickinput').value.trim();if(!v)return;
-  const cur=userAliases()[nickId]||[];
-  if(!cur.some(x=>norm(x)===norm(v)))setUserAliases(nickId,[...cur,v]);
-  $('nickinput').value='';paintNick();render();
-});
-$('nicklist').addEventListener('click',ev=>{
-  const b=ev.target.closest('button');if(!b)return;
-  const cur=userAliases()[nickId]||[];
-  setUserAliases(nickId,cur.filter((_,i)=>i!==+b.dataset.i));paintNick();render();
-});
-$('nickdone').onclick=()=>{const d=$('nickdlg');d.close?d.close():d.removeAttribute('open')};
 
 Site.boot('library',onData);
 </script>
