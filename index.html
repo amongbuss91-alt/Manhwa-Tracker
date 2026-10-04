@@ -17,13 +17,13 @@
     --hand: "Patrick Hand", "Segoe Print", "Comic Sans MS", cursive;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { height: 100%; overflow: hidden; }
   body {
     color: var(--ink);
     font-family: var(--hand);
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
-    min-height: 100vh;
+    height: 100vh; height: 100dvh;
 
     /* Wooden tabletop */
     background-color: #5b351f;
@@ -235,6 +235,8 @@
 
   /* ---------- coffee on the table ---------- */
   .coffee { display: block; width: 230px; max-width: 52vw; height: auto; margin: 34px auto 0; pointer-events: none; transform: rotate(-6deg); filter: drop-shadow(10px 16px 14px rgba(20,8,2,.55)) drop-shadow(0 2px 2px rgba(20,8,2,.4)); }
+  @media (max-height: 900px) { .coffee { width: min(230px, 22vh); margin-top: 2vh; } h1 { font-size: min(150px, 15vw, 14vh) !important; } }
+  @media (max-height: 820px) { .coffee { display: none; } }
   @media (max-width: 640px) { .coffee { width: 170px; margin-top: 22px; } }
 </style>
 </head>
