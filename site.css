@@ -290,3 +290,4 @@ body.home{background:var(--ink);overflow-x:hidden}
 #tbars .brow{grid-template-columns:150px minmax(0,1fr)}
 @media (max-width:600px){#tbars .brow{grid-template-columns:112px minmax(0,1fr)}}
 .block h2+.legend{margin-top:16px}
+.lede:empty{display:none}

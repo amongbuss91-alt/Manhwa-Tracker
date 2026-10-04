@@ -98,7 +98,7 @@ addEventListener('scroll',()=>topState(),{passive:true});addEventListener('resiz
 function mountNav(active,user,u){
   const q=user?'?user='+encodeURIComponent(user):'';
   $('nav').innerHTML=`<header class="topbar">
-    <a class="brand" href="index.html">${CROWN}<span>Manhwa Tracker</span></a>
+    <a class="brand" href="index.html">${CROWN}<span>StoryShelf Tracker</span></a>
     <nav class="tabs" aria-label="Main">
       <a class="tab${active==='library'?' on':''}" href="library.html${q}"${active==='library'?' aria-current="page"':''}>Library</a>
       <a class="tab${active==='genres'?' on':''}" href="genres.html${q}"${active==='genres'?' aria-current="page"':''}>Genres</a>
@@ -288,6 +288,6 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261004b';document.body.appendChild(b)});
+document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261004e';document.body.appendChild(b)});
 window.Site={contentLabel,lookupNames,akaOf,aliasesOf,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
 })();

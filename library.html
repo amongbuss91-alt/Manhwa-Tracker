@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Library | Manhwa Tracker</title>
+<title>Library | StoryShelf Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261004b">
+<link rel="stylesheet" href="site.css?v=20261004e">
 </head>
 <body class="app">
 <div id="nav"></div>
 <main class="shell" id="main">
   <div class="pagehead">
-    <div><h1>Library</h1><p class="lede" id="lede">Loading your list…</p></div>
+    <div><h1>Library</h1><p class="lede" id="lede"></p></div>
     <div class="livebox" id="livebox"></div>
   </div>
 
@@ -43,7 +43,6 @@
             <option value="added">Recently added</option>
             <option value="started">Year started</option>
             <option value="rating">Rating</option>
-            <option value="status">Status</option>
             <option value="origin">Type</option>
           </select>
         </div>
@@ -61,7 +60,7 @@
   </div>
 </main>
 
-<script src="site.js?v=20261004b"></script>
+<script src="site.js?v=20261004e"></script>
 <script>
 const {contentLabel,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,aliasesOf,akaOf,lookupNames}=Site;
 let all=[],state={type:'All',status:'All',genres:[],tags:[],page:1};
@@ -100,7 +99,6 @@ const modes={
  added:{key:addedBucket,keys:(a,b)=>ADDED.indexOf(a)-ADDED.indexOf(b),inner:(a,b)=>((b.createdAt||0)-(a.createdAt||0))||byTitle(a,b)},
  started:{key:e=>e.startedAt.year||'Date not set',keys:numFirst(desc),inner:byTitle},
  rating:{key:e=>avg(e)?String(Math.floor(avg(e))):'No rating yet',label:k=>/^\d/.test(k)?`${k}.0 to ${k}.9`:k,keys:numFirst(desc),inner:(a,b)=>avg(b)-avg(a)||byTitle(a,b)},
- status:{key:e=>STATUS[e.status],keys:(a,b)=>STATUS_ORDER.indexOf(a)-STATUS_ORDER.indexOf(b),inner:byTitle},
  origin:{key:originOf,keys:alpha,inner:byTitle}
 };
 
@@ -127,7 +125,7 @@ function syncSide(){
 /* ---------- data in ---------- */
 function onData(d){
   all=d.entries;
-  $('lede').innerHTML=`${all.length} titles tracked by ${esc(d.u.name)}. <a href="${esc(d.u.siteUrl)}" target="_blank" rel="noopener">View on AniList</a>`;
+  $('lede').textContent='';
   if(!all.length){
     $('layout').classList.add('hidden');
     $('main').insertAdjacentHTML('beforeend','<p class="msg" id="emptymsg">This list is empty, or it is set to private on AniList.</p>');

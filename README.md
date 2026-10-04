@@ -1,4 +1,4 @@
-# Manhwa Tracker
+# StoryShelf Tracker
 
 Type an AniList username and browse their manhwa, manga, manhua and novel list, with genre diagrams and reading stats. Static site, no build step.
 
