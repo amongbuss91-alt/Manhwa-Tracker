@@ -49,26 +49,3 @@ A fast, read-only viewer for your **AniList** manga, manhwa and manhua list. Typ
 | `list:<name>` | sessionStorage | Cached list for the current session |
 
 Nothing is sent anywhere except the AniList, MangaUpdates and MangaBaka requests above.
-
-## Notes and limits
-- **Chapters read per day** come from the user's AniList activity feed, so they only cover progress updates AniList logged. A streak counts consecutive days with at least one logged chapter.
-- **Adult / Suggestive labels** come from AniList's adult flag, the Ecchi and Hentai genres, and adult-flagged tags. Classification differs between people, so treat the labels as a guide.
-- Type (manhwa, manga, manhua) is derived from AniList's country of origin.
-- Alternate-name lookups depend on the MangaUpdates and MangaBaka services being reachable from the browser.
-
-## Project structure
-| File | Purpose |
-|---|---|
-| `index.html` | Home and username search |
-| `library.html` | Library |
-| `genres.html` | Genre diagrams |
-| `stats.html` | Reading stats |
-| `site.css`, `site.js` | Shared styles and logic |
-| `.github/workflows/pages.yml` | Publishes the site with GitHub Pages |
-| `REQUIREMENTS.md` | What the site is meant to do |
-
-## Run locally
-```bash
-python3 -m http.server 8000
-```
-Then open http://localhost:8000.
