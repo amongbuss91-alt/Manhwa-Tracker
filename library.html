@@ -6,7 +6,7 @@
 <title>Library | StoryShelf Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=20261004e">
+<link rel="stylesheet" href="site.css?v=20261004i">
 </head>
 <body class="app">
 <div id="nav"></div>
@@ -41,7 +41,7 @@
             <option value="az">Title (A–Z)</option>
             <option value="recent">Recently read</option>
             <option value="added">Recently added</option>
-            <option value="started">Year started</option>
+            <option value="pub">Publication</option>
             <option value="rating">Rating</option>
             <option value="origin">Type</option>
           </select>
@@ -60,7 +60,7 @@
   </div>
 </main>
 
-<script src="site.js?v=20261004e"></script>
+<script src="site.js?v=20261004i"></script>
 <script>
 const {contentLabel,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,aliasesOf,akaOf,lookupNames}=Site;
 let all=[],state={type:'All',status:'All',genres:[],tags:[],page:1};
@@ -97,7 +97,7 @@ const modes={
  az:{key:e=>{const c=titleOf(e)[0].toUpperCase();return /[A-Z]/.test(c)?c:'#'},keys:(a,b)=>a==='#'?1:b==='#'?-1:alpha(a,b),inner:byTitle},
  recent:{key:recentBucket,keys:(a,b)=>RECENT.indexOf(a)-RECENT.indexOf(b),inner:(a,b)=>(b.updatedAt-a.updatedAt)||byTitle(a,b)},
  added:{key:addedBucket,keys:(a,b)=>ADDED.indexOf(a)-ADDED.indexOf(b),inner:(a,b)=>((b.createdAt||0)-(a.createdAt||0))||byTitle(a,b)},
- started:{key:e=>e.startedAt.year||'Date not set',keys:numFirst(desc),inner:byTitle},
+ pub:{key:e=>(e.media.startDate||{}).year||'Year unknown',keys:numFirst(desc),inner:byTitle},
  rating:{key:e=>avg(e)?String(Math.floor(avg(e))):'No rating yet',label:k=>/^\d/.test(k)?`${k}.0 to ${k}.9`:k,keys:numFirst(desc),inner:(a,b)=>avg(b)-avg(a)||byTitle(a,b)},
  origin:{key:originOf,keys:alpha,inner:byTitle}
 };

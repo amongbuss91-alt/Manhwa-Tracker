@@ -46,7 +46,7 @@ const QUERY=`query($name:String,$chunk:Int){
  User(name:$name){name avatar{large} bannerImage siteUrl}
  MediaListCollection(userName:$name,type:MANGA,chunk:$chunk){hasNextChunk lists{entries{
   status progress updatedAt createdAt startedAt{year} completedAt{year}
-  media{id siteUrl isAdult tags{name rank isMediaSpoiler isAdult} format status genres synonyms countryOfOrigin chapters averageScore title{romaji english native} coverImage{large}}
+  media{id startDate{year} siteUrl isAdult tags{name rank isMediaSpoiler isAdult} format status genres synonyms countryOfOrigin chapters averageScore title{romaji english native} coverImage{large}}
  }}}}`;
 async function fetchList(name){
   const seen=new Set(),entries=[];let user=null,chunk=1,more=true;
@@ -70,7 +70,7 @@ async function fetchList(name){
   return {u:user,entries};
 }
 const errText=e=>e&&e.known?e.message:'Could not reach AniList. Check your connection and try again.';
-const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.createdAt,(e.media.tagNames||[]).length,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
+const sigOf=es=>es.map(e=>[e.media.id,e.status,e.progress,e.updatedAt,e.createdAt,(e.media.tagNames||[]).length,(e.media.startDate||{}).year,e.startedAt.year,e.completedAt.year].join(':')).sort().join('|');
 
 /* ---------- storage (always guarded) ---------- */
 const store={
@@ -108,7 +108,7 @@ function mountNav(active,user,u){
   let pr=$('prof');
   if(!pr){pr=document.createElement('div');pr.id='prof';$('nav').insertAdjacentElement('afterend',pr)}
   pr.className='prof'+(u&&u.bannerImage?' hasimg':'');
-  pr.innerHTML=u?`${u.bannerImage?`<img class="pbanner" src="${esc(u.bannerImage)}" alt="">`:''}<div class="pin"><img class="pav" src="${esc(u.avatar.large)}" alt=""><a class="pname" href="${esc(u.siteUrl||'#')}" target="_blank" rel="noopener">${esc(u.name)}</a></div>`:'';
+  pr.innerHTML=u?`${u.bannerImage?`<img class="pbanner" src="${esc(u.bannerImage)}" alt="">`:''}<div class="pin"><img class="pav" src="${esc(u.avatar.large)}" alt=""><a class="pname" href="${esc(u.siteUrl||'#')}" target="_blank" rel="noopener">${esc(u.name)}</a><button type="button" class="suggest" id="suggest" title="Pick a random title from this whole library">Suggest</button></div>`:'';
   topState();
 }
 
@@ -145,6 +145,7 @@ setInterval(liveUI,1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&L.name&&L.on)liveTick()});
 
 /* ---------- page boot (Library and Genres) ---------- */
+let CUR=[];
 async function boot(active,onData){
   const user=currentUser();
   if(!user){
@@ -155,6 +156,7 @@ async function boot(active,onData){
   const cached=readCache(user);
   let first=true;
   const show=d=>{
+    CUR=d.entries;
     remember(d.u.name);
     mountNav(active,d.u.name,d.u);
     first=false;onData(d);
@@ -288,6 +290,43 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261004e';document.body.appendChild(b)});
+document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261004i';document.body.appendChild(b)});
+/* ---------- Suggest: a random title from the whole library ---------- */
+(()=>{let last=null,box=null;
+const close=()=>{if(box){box.remove();box=null}};
+function pick(){
+  if(!CUR.length)return null;
+  if(CUR.length===1)return CUR[0];
+  let e;do{e=CUR[Math.floor(Math.random()*CUR.length)]}while(last&&e.media.id===last);
+  last=e.media.id;return e;
+}
+function open(){
+  const e=pick();if(!e)return;
+  const m=e.media,a=avg(e),prog=e.progress?`, Ch. ${e.progress}${m.chapters?'/'+m.chapters:''}`:'';
+  const html=`<div class="sg-card" role="dialog" aria-modal="true" aria-label="Suggested title">
+    <button type="button" class="sg-x" data-sg="close" aria-label="Close">&times;</button>
+    <a href="${esc(m.siteUrl)}" target="_blank" rel="noopener"><img src="${esc(m.coverImage.large)}" alt=""></a>
+    <div class="sg-body"><small>Random pick from ${CUR.length} titles</small>
+      <b>${esc(titleOf(e))}</b>
+      <span>${esc(originOf(e))} · ${esc(STATUS[e.status])}${prog}${a?' · '+a.toFixed(1):''}</span>
+      <div class="sg-btns"><button type="button" class="btn primary" data-sg="again">Suggest another</button><a class="btn" href="${esc(m.siteUrl)}" target="_blank" rel="noopener">AniList</a></div></div></div>`;
+  if(!box){box=document.createElement('div');box.className='sg-back';document.body.appendChild(box)}
+  box.innerHTML=html;box.querySelector('[data-sg="again"]').focus();
+}
+document.addEventListener('click',ev=>{
+  if(ev.target.closest('#suggest')){open();return}
+  const t=ev.target.closest('[data-sg]');
+  if(t){t.dataset.sg==='again'?open():close();return}
+  if(box&&ev.target===box)close();
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')close()});
+})();
+
 window.Site={contentLabel,lookupNames,akaOf,aliasesOf,BUILTIN_ALIASES,$,esc,STATUS,STATUS_ORDER,TYPES,originOf,titleOf,avg,norm,matches,agoText,fetchList,errText,writeCache,remember,recents,store,boot,CROWN};
 })();
+
+/* ---------- scroll to top ---------- */
+(()=>{if(!document.body.classList.contains('app'))return;const b=document.createElement('button');b.type='button';b.className='totop';b.setAttribute('aria-label','Scroll to top');b.innerHTML='&uarr;';
+b.onclick=()=>scrollTo({top:0,behavior:'smooth'});document.body.appendChild(b);
+const f=()=>b.classList.toggle('show',scrollY>600);addEventListener('scroll',f,{passive:true});f()})();
+
