@@ -290,7 +290,6 @@ async function lookupNames(entries,onProgress){
   report();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('div');b.className='build';b.textContent='Build 20261004i';document.body.appendChild(b)});
 /* ---------- Suggest: a random title from the whole library ---------- */
 (()=>{let last=null,box=null;
 const close=()=>{if(box){box.remove();box=null}};
