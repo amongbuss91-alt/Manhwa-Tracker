@@ -304,7 +304,7 @@ function open(){
   const m=e.media,a=avg(e),prog=e.progress?`, Ch. ${e.progress}${m.chapters?'/'+m.chapters:''}`:'';
   const html=`<div class="sg-card" role="dialog" aria-modal="true" aria-label="Suggested title">
     <button type="button" class="sg-x" data-sg="close" aria-label="Close">&times;</button>
-    <a href="${esc(m.siteUrl)}" target="_blank" rel="noopener"><img src="${esc(m.coverImage.large)}" alt=""></a>
+    <img src="${esc(m.coverImage.large)}" alt="">
     <div class="sg-body"><small>Random pick from ${CUR.length} titles</small>
       <b>${esc(titleOf(e))}</b>
       <span>${esc(originOf(e))} · ${esc(STATUS[e.status])}${prog}${a?' · '+a.toFixed(1):''}</span>

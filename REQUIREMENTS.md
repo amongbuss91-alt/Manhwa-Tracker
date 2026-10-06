@@ -15,7 +15,7 @@ What this site must do. Use this as the checklist when changing it.
 - **Home** (StoryShelf): wood-table design, username search, recent searches. The brand is not clickable here.
 - **All other pages** (StoryShelf Tracker): the brand links back to the home page. Tabs: Library, Genres, Stats.
 - **Profile header**: AniList banner, avatar and name (name links to AniList). Top bar transparent over the banner until hover or scroll.
-- **Library**: A-Z by default; Organize by (Title A-Z, Recently read, Recently added, Year started, Rating, Type); filters for type, status and genres (all must match); search that also matches alternate names; pagination 24 / 48 / 96 (default 24); Adult and Suggestive labels with tinted cards; tag filter from Stats. No reverse-order button, no table view.
+- **Library**: A-Z by default; Organize by (Title A-Z, Recently read, Recently added, Publication, Rating, Type); filters for type, status and genres (all must match); search that also matches alternate names; pagination 24 / 48 / 96 (default 24); Adult and Suggestive labels with tinted cards; tag filter from Stats. No reverse-order button, no table view.
 - **Genres**: genres by type (bars), genre pairing heatmap.
 - **Stats**: reading activity tiles (today, this week, this month, current streak), 30-day line chart, 12-month heatmap, tags by type with shortened names. Counts come from the AniList activity feed.
 

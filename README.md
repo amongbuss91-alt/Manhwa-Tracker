@@ -29,6 +29,9 @@ A fast, read-only viewer for your **AniList** manga, manhwa and manhua list. Typ
 ### Suggest
 - A Suggest button on the profile header picks a random title from the whole library and shows its cover, status and progress, with a Suggest another button.
 
+### AnimeShelf
+- A sister site for anime lives in the `anime/` folder, with its own Library, Genres and Stats pages. Each home page links to the other in the top bar.
+
 ### Genres
 - Genres broken down by type.
 - A pairing heatmap showing which genres show up together.
@@ -42,3 +45,40 @@ A fast, read-only viewer for your **AniList** manga, manhwa and manhua list. Typ
 - **AniList** is the only source for the list, progress, statuses, scores, genres and tags.
 - **MangaUpdates** and **MangaBaka** are used only to look up alternate titles for search. They never affect tracking.
 
+## How it works
+- Everything runs in the browser and talks directly to the public AniList GraphQL API (`https://graphql.anilist.co`). Only public lists can be viewed.
+- The user is selected with a `?user=` URL parameter.
+- Browser storage used:
+
+| Key | Storage | Purpose |
+|---|---|---|
+| `lastUser`, `recentUsers` | localStorage | Last and recent searches |
+| `altNames.v2` | localStorage | Cached alternate titles |
+| `act.v1:<name>` | localStorage | Cached activity for the Stats page |
+| `list:<name>` | sessionStorage | Cached list for the current session |
+
+Nothing is sent anywhere except the AniList, MangaUpdates and MangaBaka requests above.
+
+## Notes and limits
+- **Chapters read per day** come from the user's AniList activity feed, so they only cover progress updates AniList logged. A streak counts consecutive days with at least one logged chapter.
+- **Adult / Suggestive labels** come from AniList's adult flag, the Ecchi and Hentai genres, and adult-flagged tags. Classification differs between people, so treat the labels as a guide.
+- Type (manhwa, manga, manhua) is derived from AniList's country of origin.
+- Alternate-name lookups depend on the MangaUpdates and MangaBaka services being reachable from the browser.
+
+## Project structure
+| File | Purpose |
+|---|---|
+| `index.html` | Home and username search |
+| `library.html` | Library |
+| `genres.html` | Genre diagrams |
+| `stats.html` | Reading stats |
+| `site.css`, `site.js` | Shared styles and logic |
+| `anime/` | The AnimeShelf site (same layout as above) |
+| `.github/workflows/pages.yml` | Publishes the site with GitHub Pages |
+| `REQUIREMENTS.md` | What the site is meant to do |
+
+## Run locally
+```bash
+python3 -m http.server 8000
+```
+Then open http://localhost:8000.

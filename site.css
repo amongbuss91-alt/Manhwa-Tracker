@@ -322,3 +322,15 @@ body.home{background:var(--ink);overflow-x:hidden}
 .sg-x{position:absolute;top:6px;right:10px;background:none;border:0;color:var(--mute);font-size:1.6rem;cursor:pointer;line-height:1}
 .sg-x:hover{color:#fff}
 @media(max-width:480px){.sg-card{flex-direction:column;align-items:center;text-align:center}.sg-card img{width:130px}.suggest{margin-bottom:14px}}
+
+.dd{position:relative}
+.dd-btn{width:100%;min-width:130px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 38px 10px 14px;cursor:pointer;position:relative;white-space:nowrap}
+.dd-btn::after{content:"";position:absolute;right:15px;top:50%;width:7px;height:7px;border-right:2px solid var(--lav);border-bottom:2px solid var(--lav);transform:translateY(-70%) rotate(45deg)}
+.dd-btn:hover,.dd-btn[aria-expanded="true"]{border-color:var(--violet)}
+.dd-btn[aria-expanded="true"]::after{transform:translateY(-30%) rotate(-135deg)}
+.dd-panel{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:-4px 0 16px auto;width:max-content;max-width:100%;padding:6px;background:#14122c;border:1px solid var(--violet);border-radius:12px;box-shadow:0 8px 24px #0008}
+.dd-panel[hidden]{display:none}
+.dd-panel button{padding:8px 9px;font-size:.95rem;border:0;border-radius:8px;background:transparent;color:var(--bone);cursor:pointer;white-space:nowrap}
+.dd-panel button:hover,.dd-panel button:focus-visible{background:#2a2560;outline:none}
+.dd-panel button[aria-selected="true"]{background:#3a3190;color:#fff;font-weight:700}
+@media(max-width:700px){.dd-panel{width:auto;margin-left:0;justify-content:flex-start}}
